@@ -1,21 +1,21 @@
 import { useState } from "react";
-import { Input } from "@/shadcnUi/Input";
-import { Button } from "@/shadcnUi/Button";
-import { Combobox } from "@/shadcnUi/ComboBox";
-import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.data";
-import { MEDAL_LABELS, MEDAL_TYPES, MedalType } from "@/constants/medal.data";
 import { toast } from "sonner";
 
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
+
+import { MEDAL_LABELS, MEDAL_TYPES } from "@/constants/medal.constant";
+import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.constant";
+import { MedalRecordDto } from "@/types.dto";
+import { MedalFormSubmitType } from "@/types.type";
+
 export interface MedalFormProps {
-  onAddButtonClick: (data: MedalFormDto) => void;
-  onUpdateButtonClick: (data: MedalFormDto) => void;
+  onSubmit: (data: MedalRecordDto, type: MedalFormSubmitType) => void;
 }
 
-export default function MedalForm({
-  onAddButtonClick,
-  onUpdateButtonClick,
-}: MedalFormProps) {
-  const [formData, setFormData] = useState<MedalFormDto>(initialFormData);
+export default function MedalForm({ onSubmit }: MedalFormProps) {
+  const [formData, setFormData] = useState<MedalRecordDto>(initialFormData);
 
   function handleCountryChange(newCountry: string) {
     setFormData((prev) => ({
@@ -40,12 +40,12 @@ export default function MedalForm({
       });
       return;
     }
+
     const submitter = (e.nativeEvent as SubmitEvent)
       .submitter as HTMLButtonElement;
     const action = submitter.formAction.split("/").at(-1);
 
-    if (action === "add") onAddButtonClick(formData);
-    if (action === "update") onUpdateButtonClick(formData);
+    onSubmit(formData, action as MedalFormSubmitType);
     setFormData(initialFormData);
   }
 
@@ -74,10 +74,14 @@ export default function MedalForm({
         ))}
       </div>
       <div className="flex flex-row-reverse gap-4">
-        <Button variant="outline" type="submit" formAction="update">
+        <Button
+          variant="outline"
+          type="submit"
+          formAction={MedalFormSubmitType.UPDATE.toString()}
+        >
           갱신하기
         </Button>
-        <Button type="submit" formAction="add">
+        <Button type="submit" formAction={MedalFormSubmitType.ADD.toString()}>
           추가하기
         </Button>
       </div>
@@ -85,20 +89,14 @@ export default function MedalForm({
   );
 }
 
-export type MedalFormDto = {
-  country: string;
-} & {
-  [key in MedalType]: number;
-};
-
-const initialFormData: MedalFormDto = {
+const initialFormData: MedalRecordDto = {
   country: "",
   gold: 0,
   sliver: 0,
   bronze: 0,
 };
 
-function isInvalidateMedalFormData(formData: MedalFormDto) {
+function isInvalidateMedalFormData(formData: MedalRecordDto) {
   if (formData.country === "") return true;
   if (formData.gold < 0 || formData.sliver < 0 || formData.bronze < 0)
     return true;
