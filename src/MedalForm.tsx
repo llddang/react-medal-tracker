@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Input } from "@/shadcnUi/Input";
-import { Button } from "@/shadcnUi/Button";
-import { Combobox } from "@/shadcnUi/ComboBox";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Combobox } from "@/components/ui/combobox";
 import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.data";
 import { MEDAL_LABELS, MEDAL_TYPES, MedalType } from "@/constants/medal.data";
 import { toast } from "sonner";

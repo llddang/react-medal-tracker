@@ -1,5 +1,5 @@
 import MedalForm, { MedalFormDto } from "./MedalForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcnUi/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function App() {
   function addFormData(data: MedalFormDto) {
