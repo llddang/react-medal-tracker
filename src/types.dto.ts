@@ -5,3 +5,8 @@ export type MedalRecordDto = {
 } & {
   [key in MedalType]: number;
 };
+
+export type TanStackColumnSortDto = {
+  id: string;
+  desc: boolean;
+};

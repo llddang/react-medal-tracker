@@ -1,12 +1,15 @@
-import MedalForm from "@/MedalForm";
+import { toast } from "sonner";
+import { useLocalStorage } from "usehooks-ts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import MedalForm from "@/containers/MedalForm";
+import MedalTable from "@/containers/MedalTable";
+
 import { MedalFormSubmitType } from "@/types.type";
 import { MedalRecordDto } from "@/types.dto";
 
-import { useLocalStorage } from "usehooks-ts";
-import { toast } from "sonner";
-import { MEDAL_TYPES } from "./constants/medal.constant";
-import MedalTable from "./MedalTable";
+import { MEDAL_TYPES } from "@/constants/medal.constant";
 
 function App() {
   const [medalList, setMedalList] = useLocalStorage<MedalRecordDto[]>(
