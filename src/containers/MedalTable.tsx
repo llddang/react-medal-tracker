@@ -1,12 +1,3 @@
-import {
-  ColumnDef,
-  flexRender,
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  Column,
-} from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,8 +8,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { MedalRecordDto, TanStackColumnSortDto } from "@/types.dto";
-import { SetStateAction, useState } from "react";
+import { MedalRecordDto } from "@/types.dto";
+import { ArrowUpDown } from "lucide-react";
+import { SetStateAction, useEffect, useState } from "react";
 
 interface MedalRecordWithCountDto extends MedalRecordDto {
   total: number;
@@ -33,118 +25,60 @@ export default function MedalTable({
   medalList,
   setMedalList,
 }: MedalTableProps) {
-  const [sortConfig, setSortConfig] = useState<TanStackColumnSortDto[]>([
-    { id: "gold", desc: true },
-    { id: "sliver", desc: true },
-    { id: "bronze", desc: true },
-  ]);
+  const [isSortByTotal, setIsSortByTotal] = useState(false);
+  const [sortedMedalList, setSortedMedalList] =
+    useState<MedalRecordWithCountDto[]>(medalList);
 
-  const columns: ColumnDef<MedalRecordWithCountDto>[] = [
-    {
-      accessorKey: "country",
-      header: "국가명",
-      cell: ({ row }) => <div>{row.getValue("country")}</div>,
-    },
-    {
-      accessorKey: "gold",
-      header: "금메달",
-      cell: ({ row }) => <div>{row.getValue("gold")}</div>,
-    },
-    {
-      accessorKey: "sliver",
-      header: "은메달",
-      cell: ({ row }) => <div>{row.getValue("sliver")}</div>,
-    },
-    {
-      accessorKey: "bronze",
-      header: "동메달",
-      cell: ({ row }) => <div>{row.getValue("bronze")}</div>,
-    },
-    {
-      accessorKey: "total",
-      header: ({ column }) => (
-        <Button variant="ghost" onClick={() => handleTotalHeaderClick(column)}>
-          전체 합
-          <ArrowUpDown />
-        </Button>
-      ),
-      cell: ({ row }) => <div>{row.getValue("total")}</div>,
-    },
-    {
-      accessorKey: "delete",
-      header: "설정",
-      cell: ({ row }) => (
-        <Button
-          onClick={() => handleDeleteButtonClick(row.getValue("country"))}
-        >
-          삭제
-        </Button>
-      ),
-    },
-  ];
-
-  const table = useReactTable({
-    data: medalList,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting: sortConfig,
-    },
-    onSortingChange: setSortConfig,
-  });
-
-  function handleTotalHeaderClick(
-    column: Column<MedalRecordWithCountDto, unknown>
-  ) {
-    const isSorted = column.getIsSorted();
-    if (!isSorted)
-      setSortConfig((prev) => [{ id: column.id, desc: true }, ...prev]);
-    else column.clearSorting();
+  function handleTotalHeaderClick() {
+    setIsSortByTotal((prev) => !prev);
   }
 
-  function handleDeleteButtonClick(country: string) {
-    setMedalList((prev) => prev.filter((medal) => medal.country !== country));
+  function handleDeleteButtonClick(item: MedalRecordWithCountDto) {
+    setMedalList((prev) =>
+      prev.filter((medal) => medal.country !== item.country)
+    );
   }
+
+  useEffect(() => {
+    if (isSortByTotal) setSortedMedalList(medalList.sort(byTotalSorting));
+    else setSortedMedalList(medalList.sort(byMedalSorting));
+  }, [isSortByTotal, medalList]);
 
   return (
     <div className="rounded-md border w-full text-center">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id} className="text-center">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
+          <TableRow>
+            <TableHead className="text-center">국가</TableHead>
+            <TableHead className="text-center">금메달</TableHead>
+            <TableHead className="text-center">은메달</TableHead>
+            <TableHead className="text-center">동메달</TableHead>
+            <TableHead className="text-center">
+              <Button variant="ghost" onClick={() => handleTotalHeaderClick()}>
+                전체 합
+                <ArrowUpDown />
+              </Button>
+            </TableHead>
+            <TableHead className="text-center">설정</TableHead>
+          </TableRow>
         </TableHeader>
         <TableBody>
-          {table.getSortedRowModel().rows?.length ? (
-            table.getSortedRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+          {sortedMedalList.length ? (
+            sortedMedalList.map((item) => (
+              <TableRow key={item.country}>
+                {Object.entries(item).map(([key, value]) => (
+                  <TableCell key={key}>{value}</TableCell>
                 ))}
+                <TableCell>
+                  <Button onClick={() => handleDeleteButtonClick(item)}>
+                    삭제
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={6} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
@@ -153,4 +87,21 @@ export default function MedalTable({
       </Table>
     </div>
   );
+}
+
+function byMedalSorting(
+  a: MedalRecordWithCountDto,
+  b: MedalRecordWithCountDto
+) {
+  if (a.gold === b.gold && a.sliver === b.sliver) return b.bronze - a.bronze;
+  if (a.gold === b.gold) return b.sliver - a.sliver;
+  return b.gold - a.gold;
+}
+
+function byTotalSorting(
+  a: MedalRecordWithCountDto,
+  b: MedalRecordWithCountDto
+) {
+  if (a.total === b.total) return byMedalSorting(a, b);
+  return b.total - a.total;
 }
