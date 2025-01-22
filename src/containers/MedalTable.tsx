@@ -10,7 +10,7 @@ import {
 
 import { MedalRecordDto } from "@/types.dto";
 import { ArrowUpDown } from "lucide-react";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useState } from "react";
 
 interface MedalRecordWithCountDto extends MedalRecordDto {
   total: number;
@@ -26,8 +26,9 @@ export default function MedalTable({
   setMedalList,
 }: MedalTableProps) {
   const [isSortByTotal, setIsSortByTotal] = useState(false);
-  const [sortedMedalList, setSortedMedalList] =
-    useState<MedalRecordWithCountDto[]>(medalList);
+  const sortedMedalList = isSortByTotal
+    ? medalList.sort(byTotalSorting)
+    : medalList.sort(byMedalSorting);
 
   function handleTotalHeaderClick() {
     setIsSortByTotal((prev) => !prev);
@@ -38,11 +39,6 @@ export default function MedalTable({
       prev.filter((medal) => medal.country !== item.country)
     );
   }
-
-  useEffect(() => {
-    if (isSortByTotal) setSortedMedalList(medalList.sort(byTotalSorting));
-    else setSortedMedalList(medalList.sort(byMedalSorting));
-  }, [isSortByTotal, medalList]);
 
   return (
     <div className="rounded-md border w-full text-center">
@@ -63,7 +59,7 @@ export default function MedalTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedMedalList.length ? (
+          {medalList.length ? (
             sortedMedalList.map((item) => (
               <TableRow key={item.country}>
                 {Object.entries(item).map(([key, value]) => (
