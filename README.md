@@ -51,7 +51,7 @@
     |- containers/
     |    |- 특정 페이지에서만 사용되는 컴포넌트들을 모아두었습니다. (MedalForm, MedalTable)
     |
-    |- constants/
+    |- constants/
     |    |- 정적인 데이터들을 모아두었습니다.
     |
     |- types.dto.ts
