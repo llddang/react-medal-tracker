@@ -4,6 +4,7 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  Column,
 } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { MedalRecordDto } from "@/types.dto";
+import { MedalRecordDto, TanStackColumnSortDto } from "@/types.dto";
 import { SetStateAction, useState } from "react";
-import { TanStackColumnSort } from "./types.type";
 
 interface MedalRecordWithCountDto extends MedalRecordDto {
   total: number;
@@ -33,7 +33,7 @@ export default function MedalTable({
   medalList,
   setMedalList,
 }: MedalTableProps) {
-  const [sortConfig, setSortConfig] = useState<TanStackColumnSort[]>([
+  const [sortConfig, setSortConfig] = useState<TanStackColumnSortDto[]>([
     { id: "gold", desc: true },
     { id: "sliver", desc: true },
     { id: "bronze", desc: true },
@@ -62,19 +62,8 @@ export default function MedalTable({
     },
     {
       accessorKey: "total",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            setSortConfig((prev) => {
-              const newArr = [...prev];
-              if (newArr.length === 3)
-                newArr.unshift({ id: "total", desc: true });
-              else newArr.shift();
-              return newArr;
-            })
-          }
-        >
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => handleTotalHeaderClick(column)}>
           전체 합
           <ArrowUpDown />
         </Button>
@@ -86,11 +75,7 @@ export default function MedalTable({
       header: "설정",
       cell: ({ row }) => (
         <Button
-          onClick={() =>
-            setMedalList((prev) =>
-              prev.filter((medal) => medal.country !== row.getValue("country"))
-            )
-          }
+          onClick={() => handleDeleteButtonClick(row.getValue("country"))}
         >
           삭제
         </Button>
@@ -108,6 +93,19 @@ export default function MedalTable({
     },
     onSortingChange: setSortConfig,
   });
+
+  function handleTotalHeaderClick(
+    column: Column<MedalRecordWithCountDto, unknown>
+  ) {
+    const isSorted = column.getIsSorted();
+    if (!isSorted)
+      setSortConfig((prev) => [{ id: column.id, desc: true }, ...prev]);
+    else column.clearSorting();
+  }
+
+  function handleDeleteButtonClick(country: string) {
+    setMedalList((prev) => prev.filter((medal) => medal.country !== country));
+  }
 
   return (
     <div className="rounded-md border w-full text-center">
