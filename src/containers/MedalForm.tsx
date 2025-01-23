@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 
 import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.constant";
-import { MedalRecordDto } from "@/types.dto";
+import { MedalDataDto } from "@/types.dto";
 import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
 
 export interface MedalFormProps {
-  onSubmit: (data: MedalRecordDto, type: MEDAL_FORM_SUBMIT_TYPE) => void;
+  onSubmit: (data: MedalDataDto, type: MEDAL_FORM_SUBMIT_TYPE) => void;
 }
 
 export default function MedalForm({ onSubmit }: MedalFormProps) {
-  const [formData, setFormData] = useState<MedalRecordDto>(initialFormData);
+  const [formData, setFormData] = useState<MedalDataDto>(initialFormData);
 
   function handleCountryChange(newCountry: string) {
     setFormData((prev) => ({
@@ -90,14 +90,14 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
   );
 }
 
-const initialFormData: MedalRecordDto = {
+const initialFormData: MedalDataDto = {
   country: "",
   gold: 0,
   sliver: 0,
   bronze: 0,
 };
 
-function isInvalidateMedalFormData(formData: MedalRecordDto) {
+function isInvalidateMedalFormData(formData: MedalDataDto) {
   if (formData.country === "") return true;
   if (formData.gold < 0 || formData.sliver < 0 || formData.bronze < 0)
     return true;

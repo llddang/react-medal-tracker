@@ -1,7 +1,11 @@
-import { MEDAL_TYPE } from "./types.type";
-
-export type MedalRecordDto = {
+export interface MedalDataDto {
   country: string;
-} & {
-  [key in MEDAL_TYPE]: number;
-};
+  gold: number;
+  sliver: number;
+  bronze: number;
+}
+
+export interface MedalRecordDto extends MedalDataDto {
+  id: string;
+  total: number;
+}

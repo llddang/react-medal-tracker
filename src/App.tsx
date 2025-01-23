@@ -7,7 +7,7 @@ import MedalForm from "@/containers/MedalForm";
 import MedalTable from "@/containers/MedalTable";
 
 import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_TYPE } from "@/types.type";
-import { MedalRecordDto } from "@/types.dto";
+import { MedalDataDto, MedalRecordDto } from "@/types.dto";
 
 function App() {
   const [medalList, setMedalList] = useLocalStorage<MedalRecordDto[]>(
@@ -15,10 +15,7 @@ function App() {
     []
   );
 
-  function handleSubmit(
-    formData: MedalRecordDto,
-    type: MEDAL_FORM_SUBMIT_TYPE
-  ) {
+  function handleSubmit(formData: MedalDataDto, type: MEDAL_FORM_SUBMIT_TYPE) {
     if (MedalFormSubmitConfig[type].isInvalidate(medalList, formData.country)) {
       toast.warning("잘못된 입력 방식입니다.", {
         description: MedalFormSubmitConfig[type].errorMessage,
@@ -26,12 +23,20 @@ function App() {
       return;
     }
 
+    const id = crypto.randomUUID();
+    const totalMedalCount = (
+      Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>
+    ).reduce((sum, key) => sum + formData[MEDAL_TYPE[key]], 0);
+
     if (type === MEDAL_FORM_SUBMIT_TYPE.ADD)
-      setMedalList((prev) => [...prev, formData]);
+      setMedalList((prev) => [
+        ...prev,
+        { ...formData, id, total: totalMedalCount },
+      ]);
     if (type === MEDAL_FORM_SUBMIT_TYPE.UPDATE)
       setMedalList((prev) => [
         ...prev.filter((item) => item.country !== formData.country),
-        formData,
+        { ...formData, id, total: totalMedalCount },
       ]);
   }
 
@@ -61,7 +66,7 @@ export default App;
 const MedalFormSubmitConfig: {
   [key in MEDAL_FORM_SUBMIT_TYPE]: {
     errorMessage: string;
-    isInvalidate: (list: MedalRecordDto[], country: string) => boolean;
+    isInvalidate: (list: MedalDataDto[], country: string) => boolean;
   };
 } = {
   [MEDAL_FORM_SUBMIT_TYPE.ADD]: {
