@@ -1,3 +1,5 @@
+export const LOCAL_STORAGE_MEDAL_LIST = "medal-list";
+
 export const PARIS_OLYMPICS_COUNTRIES: string[] = [
   "가나",
   "가봉",
