@@ -11,8 +11,8 @@ export const MedalType = {
   BRONZE: "bronze",
 } as const;
 export type MedalType = (typeof MedalType)[keyof typeof MedalType];
-export const MedalTypeList = Object.keys(MedalType) as Array<
-  keyof typeof MedalType
+export const MedalTypeValues = Object.values(MedalType) as Array<
+  (typeof MedalType)[keyof typeof MedalType]
 >;
 
 export const MEDAL_LABELS = {

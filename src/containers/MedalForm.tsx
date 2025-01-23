@@ -10,8 +10,7 @@ import { MedalDataDto, MedalRecordDto } from "@/types.dto";
 import {
   MedalFormSubmitType,
   MEDAL_LABELS,
-  MedalType,
-  MedalTypeList,
+  MedalTypeValues,
 } from "@/types.type";
 import { formSubmitLogic, isInvalidateFormData } from "@/lib/medalForm.util";
 
@@ -39,8 +38,8 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
 
   function saveMedalList(formData: MedalDataDto, type: MedalFormSubmitType) {
     const id = crypto.randomUUID();
-    const totalMedalCount = MedalTypeList.reduce(
-      (sum, key) => sum + formData[MedalType[key]],
+    const totalMedalCount = MedalTypeValues.reduce(
+      (sum, key) => sum + formData[key],
       0
     );
 
@@ -98,13 +97,13 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
             defaultValue="국가 선택"
           />
         </div>
-        {MedalTypeList.map((type) => (
+        {MedalTypeValues.map((type) => (
           <div key={type} className="flex-1">
-            <p className="font-medium">{MEDAL_LABELS[MedalType[type]]}</p>
+            <p className="font-medium">{MEDAL_LABELS[type]}</p>
             <Input
               type="number"
               id={type}
-              value={formData[MedalType[type]]}
+              value={formData[type]}
               onChange={handleMedalCountChange}
             />
           </div>
