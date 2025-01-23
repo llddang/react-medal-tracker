@@ -3,14 +3,12 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
-import { getFormActionValue, getLocalStorageData } from "@/lib/utils";
-import {
-  LOCAL_STORAGE_MEDAL_LIST,
-  PARIS_OLYMPICS_COUNTRIES_OPTION,
-} from "@/constants";
+import { getFormActionValue } from "@/lib/utils";
+import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants";
 
 import { MedalDataDto, MedalRecordDto } from "@/types.dto";
 import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
+import { formSubmitLogic, isInvalidateFormData } from "@/lib/medalForm.util";
 
 export interface MedalFormProps {
   setMedalList: React.Dispatch<SetStateAction<MedalRecordDto[]>>;
@@ -54,7 +52,7 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (isInvalidateMedalFormData(formData)) {
+    if (isInvalidateFormData(formData)) {
       toast.warning("잘못된 입력 형식입니다.", {
         description: "국가가 선택되었고 메달의 값이 0 이상인지 확인해 주세요.",
       });
@@ -62,9 +60,9 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
     }
 
     const actionType = getFormActionValue(e) as MEDAL_FORM_SUBMIT_TYPE;
-    if (FormSubmitConfig[actionType].isInvalidate(formData.country)) {
+    if (formSubmitLogic[actionType].isInvalidate(formData.country)) {
       toast.warning("잘못된 입력 방식입니다.", {
-        description: FormSubmitConfig[actionType].errorMessage,
+        description: formSubmitLogic[actionType].errorMessage,
       });
       return;
     }
@@ -122,32 +120,3 @@ const initialFormData: MedalDataDto = {
   sliver: 0,
   bronze: 0,
 };
-
-const FormSubmitConfig: {
-  [key in MEDAL_FORM_SUBMIT_TYPE]: {
-    errorMessage: string;
-    isInvalidate: (country: string) => boolean;
-  };
-} = {
-  [MEDAL_FORM_SUBMIT_TYPE.ADD]: {
-    errorMessage: "이미 존재하는 국가입니다.",
-    isInvalidate: (country) =>
-      getLocalStorageData(LOCAL_STORAGE_MEDAL_LIST).some(
-        (item: MedalRecordDto) => item.country === country
-      ),
-  },
-  [MEDAL_FORM_SUBMIT_TYPE.UPDATE]: {
-    errorMessage: "기존에 존재하지 않은 국가입니다.",
-    isInvalidate: (country) =>
-      !getLocalStorageData(LOCAL_STORAGE_MEDAL_LIST).some(
-        (item: MedalRecordDto) => item.country === country
-      ),
-  },
-};
-
-function isInvalidateMedalFormData(formData: MedalDataDto) {
-  if (formData.country === "") return true;
-  if (formData.gold < 0 || formData.sliver < 0 || formData.bronze < 0)
-    return true;
-  return false;
-}
