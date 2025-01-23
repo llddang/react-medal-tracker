@@ -1,3 +1,5 @@
+import { SetStateAction, useState } from "react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,8 +11,6 @@ import {
 } from "@/components/ui/table";
 
 import { MedalRecordDto } from "@/types.dto";
-import { ArrowUpDown } from "lucide-react";
-import { SetStateAction, useState } from "react";
 
 export interface MedalTableProps {
   medalList: MedalRecordDto[];

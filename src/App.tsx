@@ -1,12 +1,10 @@
 import { useLocalStorage } from "usehooks-ts";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import MedalForm from "@/containers/MedalForm";
 import MedalTable from "@/containers/MedalTable";
+import { LOCAL_STORAGE_MEDAL_LIST } from "@/constants";
 
 import { MedalRecordDto } from "@/types.dto";
-import { LOCAL_STORAGE_MEDAL_LIST } from "./constants";
 
 function App() {
   const [medalList, setMedalList] = useLocalStorage<MedalRecordDto[]>(

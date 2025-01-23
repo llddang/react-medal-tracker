@@ -1,17 +1,16 @@
 import { SetStateAction, useState } from "react";
 import { toast } from "sonner";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
-
-import { MedalDataDto, MedalRecordDto } from "@/types.dto";
-import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
 import { getFormActionValue, getLocalStorageData } from "@/lib/utils";
 import {
   LOCAL_STORAGE_MEDAL_LIST,
   PARIS_OLYMPICS_COUNTRIES_OPTION,
 } from "@/constants";
+
+import { MedalDataDto, MedalRecordDto } from "@/types.dto";
+import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
 
 export interface MedalFormProps {
   setMedalList: React.Dispatch<SetStateAction<MedalRecordDto[]>>;
