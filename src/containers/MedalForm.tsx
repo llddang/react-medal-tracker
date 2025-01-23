@@ -7,7 +7,12 @@ import { getFormActionValue } from "@/lib/utils";
 import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants";
 
 import { MedalDataDto, MedalRecordDto } from "@/types.dto";
-import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
+import {
+  MEDAL_FORM_SUBMIT_TYPE,
+  MEDAL_LABELS,
+  MEDAL_TYPE,
+  MedalTypeList,
+} from "@/types.type";
 import { formSubmitLogic, isInvalidateFormData } from "@/lib/medalForm.util";
 
 export interface MedalFormProps {
@@ -34,9 +39,10 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
 
   function saveMedalList(formData: MedalDataDto, type: MEDAL_FORM_SUBMIT_TYPE) {
     const id = crypto.randomUUID();
-    const totalMedalCount = (
-      Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>
-    ).reduce((sum, key) => sum + formData[MEDAL_TYPE[key]], 0);
+    const totalMedalCount = MedalTypeList.reduce(
+      (sum, key) => sum + formData[MEDAL_TYPE[key]],
+      0
+    );
 
     if (type === MEDAL_FORM_SUBMIT_TYPE.ADD)
       setMedalList((prev) => [
@@ -84,19 +90,17 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
             defaultValue="국가 선택"
           />
         </div>
-        {(Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>).map(
-          (type) => (
-            <div key={type} className="flex-1">
-              <p className="font-medium">{MEDAL_LABELS[MEDAL_TYPE[type]]}</p>
-              <Input
-                type="number"
-                id={type}
-                value={formData[MEDAL_TYPE[type]]}
-                onChange={handleMedalCountChange}
-              />
-            </div>
-          )
-        )}
+        {MedalTypeList.map((type) => (
+          <div key={type} className="flex-1">
+            <p className="font-medium">{MEDAL_LABELS[MEDAL_TYPE[type]]}</p>
+            <Input
+              type="number"
+              id={type}
+              value={formData[MEDAL_TYPE[type]]}
+              onChange={handleMedalCountChange}
+            />
+          </div>
+        ))}
       </div>
       <div className="flex flex-row-reverse gap-4">
         <Button
