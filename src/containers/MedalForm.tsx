@@ -65,7 +65,7 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
       return;
     }
 
-    const actionType = getFormActionValue(e) as MEDAL_FORM_SUBMIT_TYPE;
+    const actionType = getFormActionValue<MEDAL_FORM_SUBMIT_TYPE>(e);
     if (formSubmitLogic[actionType].isInvalidate(formData.country)) {
       toast.warning("잘못된 입력 방식입니다.", {
         description: formSubmitLogic[actionType].errorMessage,
