@@ -15,7 +15,7 @@ function App() {
   );
 
   return (
-    <Card className="min-w-[600px] max-w-[1000px] w-4/5 mx-auto mt-12">
+    <Card className="min-w-[37.5rem] max-w-[62.5rem] w-4/5 mx-auto mt-12">
       <CardHeader>
         <CardTitle>2024 파리 올림픽</CardTitle>
       </CardHeader>
