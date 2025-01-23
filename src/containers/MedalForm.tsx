@@ -8,10 +8,10 @@ import { Combobox } from "@/components/ui/combobox";
 import { MEDAL_LABELS, MEDAL_TYPES } from "@/constants/medal.constant";
 import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.constant";
 import { MedalRecordDto } from "@/types.dto";
-import { MedalFormSubmitType } from "@/types.type";
+import { MEDAL_FORM_SUBMIT_TYPE } from "@/types.type";
 
 export interface MedalFormProps {
-  onSubmit: (data: MedalRecordDto, type: MedalFormSubmitType) => void;
+  onSubmit: (data: MedalRecordDto, type: MEDAL_FORM_SUBMIT_TYPE) => void;
 }
 
 export default function MedalForm({ onSubmit }: MedalFormProps) {
@@ -45,7 +45,7 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
       .submitter as HTMLButtonElement;
     const action = submitter.formAction.split("/").at(-1);
 
-    onSubmit(formData, action as MedalFormSubmitType);
+    onSubmit(formData, action as MEDAL_FORM_SUBMIT_TYPE);
     setFormData(initialFormData);
   }
 
@@ -77,11 +77,11 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
         <Button
           variant="outline"
           type="submit"
-          formAction={MedalFormSubmitType.UPDATE.toString()}
+          formAction={MEDAL_FORM_SUBMIT_TYPE.UPDATE}
         >
           갱신하기
         </Button>
-        <Button type="submit" formAction={MedalFormSubmitType.ADD.toString()}>
+        <Button type="submit" formAction={MEDAL_FORM_SUBMIT_TYPE.ADD}>
           추가하기
         </Button>
       </div>
