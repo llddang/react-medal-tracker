@@ -8,9 +8,9 @@ import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants";
 
 import { MedalDataDto, MedalRecordDto } from "@/types.dto";
 import {
-  MEDAL_FORM_SUBMIT_TYPE,
+  MedalFormSubmitType,
   MEDAL_LABELS,
-  MEDAL_TYPE,
+  MedalType,
   MedalTypeList,
 } from "@/types.type";
 import { formSubmitLogic, isInvalidateFormData } from "@/lib/medalForm.util";
@@ -37,19 +37,19 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
     }));
   }
 
-  function saveMedalList(formData: MedalDataDto, type: MEDAL_FORM_SUBMIT_TYPE) {
+  function saveMedalList(formData: MedalDataDto, type: MedalFormSubmitType) {
     const id = crypto.randomUUID();
     const totalMedalCount = MedalTypeList.reduce(
-      (sum, key) => sum + formData[MEDAL_TYPE[key]],
+      (sum, key) => sum + formData[MedalType[key]],
       0
     );
 
-    if (type === MEDAL_FORM_SUBMIT_TYPE.ADD)
+    if (type === MedalFormSubmitType.ADD)
       setMedalList((prev) => [
         ...prev,
         { ...formData, id, total: totalMedalCount },
       ]);
-    if (type === MEDAL_FORM_SUBMIT_TYPE.UPDATE)
+    if (type === MedalFormSubmitType.UPDATE)
       setMedalList((prev) => [
         ...prev.filter((item) => item.country !== formData.country),
         { ...formData, id, total: totalMedalCount },
@@ -65,7 +65,7 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
       return;
     }
 
-    const actionType = getFormActionValue<MEDAL_FORM_SUBMIT_TYPE>(e);
+    const actionType = getFormActionValue<MedalFormSubmitType>(e);
     if (formSubmitLogic[actionType].isInvalidate(formData.country)) {
       toast.warning("잘못된 입력 방식입니다.", {
         description: formSubmitLogic[actionType].errorMessage,
@@ -92,11 +92,11 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
         </div>
         {MedalTypeList.map((type) => (
           <div key={type} className="flex-1">
-            <p className="font-medium">{MEDAL_LABELS[MEDAL_TYPE[type]]}</p>
+            <p className="font-medium">{MEDAL_LABELS[MedalType[type]]}</p>
             <Input
               type="number"
               id={type}
-              value={formData[MEDAL_TYPE[type]]}
+              value={formData[MedalType[type]]}
               onChange={handleMedalCountChange}
             />
           </div>
@@ -106,11 +106,11 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
         <Button
           variant="outline"
           type="submit"
-          formAction={MEDAL_FORM_SUBMIT_TYPE.UPDATE}
+          formAction={MedalFormSubmitType.UPDATE}
         >
           갱신하기
         </Button>
-        <Button type="submit" formAction={MEDAL_FORM_SUBMIT_TYPE.ADD}>
+        <Button type="submit" formAction={MedalFormSubmitType.ADD}>
           추가하기
         </Button>
       </div>
