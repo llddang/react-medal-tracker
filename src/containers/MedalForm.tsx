@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { toast } from "sonner";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
+import { getFormActionValue, getLocalStorageData } from "@/lib/utils";
+import {
+  LOCAL_STORAGE_MEDAL_LIST,
+  PARIS_OLYMPICS_COUNTRIES_OPTION,
+} from "@/constants";
 
-import { MEDAL_LABELS, MEDAL_TYPES } from "@/constants/medal.constant";
-import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.constant";
-import { MedalRecordDto } from "@/types.dto";
-import { MedalFormSubmitType } from "@/types.type";
+import { MedalDataDto, MedalRecordDto } from "@/types.dto";
+import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
 
 export interface MedalFormProps {
-  onSubmit: (data: MedalRecordDto, type: MedalFormSubmitType) => void;
+  setMedalList: React.Dispatch<SetStateAction<MedalRecordDto[]>>;
 }
 
-export default function MedalForm({ onSubmit }: MedalFormProps) {
-  const [formData, setFormData] = useState<MedalRecordDto>(initialFormData);
+export default function MedalForm({ setMedalList }: MedalFormProps) {
+  const [formData, setFormData] = useState<MedalDataDto>(initialFormData);
 
   function handleCountryChange(newCountry: string) {
     setFormData((prev) => ({
@@ -32,6 +34,24 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
     }));
   }
 
+  function saveMedalList(formData: MedalDataDto, type: MEDAL_FORM_SUBMIT_TYPE) {
+    const id = crypto.randomUUID();
+    const totalMedalCount = (
+      Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>
+    ).reduce((sum, key) => sum + formData[MEDAL_TYPE[key]], 0);
+
+    if (type === MEDAL_FORM_SUBMIT_TYPE.ADD)
+      setMedalList((prev) => [
+        ...prev,
+        { ...formData, id, total: totalMedalCount },
+      ]);
+    if (type === MEDAL_FORM_SUBMIT_TYPE.UPDATE)
+      setMedalList((prev) => [
+        ...prev.filter((item) => item.country !== formData.country),
+        { ...formData, id, total: totalMedalCount },
+      ]);
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isInvalidateMedalFormData(formData)) {
@@ -41,11 +61,16 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
       return;
     }
 
-    const submitter = (e.nativeEvent as SubmitEvent)
-      .submitter as HTMLButtonElement;
-    const action = submitter.formAction.split("/").at(-1);
+    const actionType = getFormActionValue(e) as MEDAL_FORM_SUBMIT_TYPE;
+    if (FormSubmitConfig[actionType].isInvalidate(formData.country)) {
+      toast.warning("잘못된 입력 방식입니다.", {
+        description: FormSubmitConfig[actionType].errorMessage,
+      });
+      return;
+    }
 
-    onSubmit(formData, action as MedalFormSubmitType);
+    saveMedalList(formData, actionType);
+
     setFormData(initialFormData);
   }
 
@@ -61,27 +86,29 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
             defaultValue="국가 선택"
           />
         </div>
-        {MEDAL_TYPES.map((type) => (
-          <div key={type} className="flex-1">
-            <p className="font-medium">{MEDAL_LABELS[type]}</p>
-            <Input
-              type="number"
-              id={type}
-              value={formData[type]}
-              onChange={handleMedalCountChange}
-            />
-          </div>
-        ))}
+        {(Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>).map(
+          (type) => (
+            <div key={type} className="flex-1">
+              <p className="font-medium">{MEDAL_LABELS[MEDAL_TYPE[type]]}</p>
+              <Input
+                type="number"
+                id={type}
+                value={formData[MEDAL_TYPE[type]]}
+                onChange={handleMedalCountChange}
+              />
+            </div>
+          )
+        )}
       </div>
       <div className="flex flex-row-reverse gap-4">
         <Button
           variant="outline"
           type="submit"
-          formAction={MedalFormSubmitType.UPDATE.toString()}
+          formAction={MEDAL_FORM_SUBMIT_TYPE.UPDATE}
         >
           갱신하기
         </Button>
-        <Button type="submit" formAction={MedalFormSubmitType.ADD.toString()}>
+        <Button type="submit" formAction={MEDAL_FORM_SUBMIT_TYPE.ADD}>
           추가하기
         </Button>
       </div>
@@ -89,14 +116,36 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
   );
 }
 
-const initialFormData: MedalRecordDto = {
+const initialFormData: MedalDataDto = {
   country: "",
   gold: 0,
   sliver: 0,
   bronze: 0,
 };
 
-function isInvalidateMedalFormData(formData: MedalRecordDto) {
+const FormSubmitConfig: {
+  [key in MEDAL_FORM_SUBMIT_TYPE]: {
+    errorMessage: string;
+    isInvalidate: (country: string) => boolean;
+  };
+} = {
+  [MEDAL_FORM_SUBMIT_TYPE.ADD]: {
+    errorMessage: "이미 존재하는 국가입니다.",
+    isInvalidate: (country) =>
+      getLocalStorageData(LOCAL_STORAGE_MEDAL_LIST).some(
+        (item: MedalRecordDto) => item.country === country
+      ),
+  },
+  [MEDAL_FORM_SUBMIT_TYPE.UPDATE]: {
+    errorMessage: "기존에 존재하지 않은 국가입니다.",
+    isInvalidate: (country) =>
+      !getLocalStorageData(LOCAL_STORAGE_MEDAL_LIST).some(
+        (item: MedalRecordDto) => item.country === country
+      ),
+  },
+};
+
+function isInvalidateMedalFormData(formData: MedalDataDto) {
   if (formData.country === "") return true;
   if (formData.gold < 0 || formData.sliver < 0 || formData.bronze < 0)
     return true;

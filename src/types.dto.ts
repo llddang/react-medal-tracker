@@ -1,7 +1,11 @@
-import { MedalType } from "./constants/medal.constant";
-
-export type MedalRecordDto = {
+export interface MedalDataDto {
   country: string;
-} & {
-  [key in MedalType]: number;
-};
+  gold: number;
+  sliver: number;
+  bronze: number;
+}
+
+export interface MedalRecordDto extends MedalDataDto {
+  id: string;
+  total: number;
+}

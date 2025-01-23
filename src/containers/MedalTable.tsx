@@ -1,3 +1,5 @@
+import { SetStateAction, useState } from "react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,15 +11,9 @@ import {
 } from "@/components/ui/table";
 
 import { MedalRecordDto } from "@/types.dto";
-import { ArrowUpDown } from "lucide-react";
-import { SetStateAction, useState } from "react";
-
-interface MedalRecordWithCountDto extends MedalRecordDto {
-  total: number;
-}
 
 export interface MedalTableProps {
-  medalList: MedalRecordWithCountDto[];
+  medalList: MedalRecordDto[];
   setMedalList: React.Dispatch<SetStateAction<MedalRecordDto[]>>;
 }
 
@@ -34,10 +30,8 @@ export default function MedalTable({
     setIsSortByTotal((prev) => !prev);
   }
 
-  function handleDeleteButtonClick(item: MedalRecordWithCountDto) {
-    setMedalList((prev) =>
-      prev.filter((medal) => medal.country !== item.country)
-    );
+  function handleDeleteButtonClick(medalRecordId: string) {
+    setMedalList((prev) => prev.filter((medal) => medal.id !== medalRecordId));
   }
 
   return (
@@ -50,7 +44,7 @@ export default function MedalTable({
             <TableHead className="text-center">은메달</TableHead>
             <TableHead className="text-center">동메달</TableHead>
             <TableHead className="text-center">
-              <Button variant="ghost" onClick={() => handleTotalHeaderClick()}>
+              <Button variant="ghost" onClick={handleTotalHeaderClick}>
                 전체 합
                 <ArrowUpDown />
               </Button>
@@ -61,12 +55,14 @@ export default function MedalTable({
         <TableBody>
           {medalList.length ? (
             sortedMedalList.map((item) => (
-              <TableRow key={item.country}>
-                {Object.entries(item).map(([key, value]) => (
-                  <TableCell key={key}>{value}</TableCell>
-                ))}
+              <TableRow key={item.id}>
+                <TableCell>{item.country}</TableCell>
+                <TableCell>{item.gold}</TableCell>
+                <TableCell>{item.sliver}</TableCell>
+                <TableCell>{item.bronze}</TableCell>
+                <TableCell>{item.total}</TableCell>
                 <TableCell>
-                  <Button onClick={() => handleDeleteButtonClick(item)}>
+                  <Button onClick={() => handleDeleteButtonClick(item.id)}>
                     삭제
                   </Button>
                 </TableCell>
@@ -85,19 +81,13 @@ export default function MedalTable({
   );
 }
 
-function byMedalSorting(
-  a: MedalRecordWithCountDto,
-  b: MedalRecordWithCountDto
-) {
+function byMedalSorting(a: MedalRecordDto, b: MedalRecordDto) {
   if (a.gold === b.gold && a.sliver === b.sliver) return b.bronze - a.bronze;
   if (a.gold === b.gold) return b.sliver - a.sliver;
   return b.gold - a.gold;
 }
 
-function byTotalSorting(
-  a: MedalRecordWithCountDto,
-  b: MedalRecordWithCountDto
-) {
+function byTotalSorting(a: MedalRecordDto, b: MedalRecordDto) {
   if (a.total === b.total) return byMedalSorting(a, b);
   return b.total - a.total;
 }
