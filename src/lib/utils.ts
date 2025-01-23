@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getLocalStorageData(key: string) {
-  return JSON.parse(localStorage.getItem(key) ?? "");
+  return JSON.parse(localStorage.getItem(key) ?? "[]");
 }
 
 export function getFormActionValue<T>(e: React.FormEvent<HTMLFormElement>) {
