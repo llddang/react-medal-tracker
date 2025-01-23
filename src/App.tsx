@@ -6,10 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MedalForm from "@/containers/MedalForm";
 import MedalTable from "@/containers/MedalTable";
 
-import { MEDAL_FORM_SUBMIT_TYPE } from "@/types.type";
+import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_TYPE } from "@/types.type";
 import { MedalRecordDto } from "@/types.dto";
-
-import { MEDAL_TYPES } from "@/constants/medal.constant";
 
 function App() {
   const [medalList, setMedalList] = useLocalStorage<MedalRecordDto[]>(
@@ -47,7 +45,9 @@ function App() {
         <MedalTable
           medalList={medalList.map((item) => ({
             ...item,
-            total: MEDAL_TYPES.reduce((acc, value) => acc + item[value], 0),
+            total: (
+              Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>
+            ).reduce((sum, key) => sum + item[MEDAL_TYPE[key]], 0),
           }))}
           setMedalList={setMedalList}
         />

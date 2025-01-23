@@ -1,7 +1,7 @@
-import { MedalType } from "./constants/medal.constant";
+import { MEDAL_TYPE } from "./types.type";
 
 export type MedalRecordDto = {
   country: string;
 } & {
-  [key in MedalType]: number;
+  [key in MEDAL_TYPE]: number;
 };

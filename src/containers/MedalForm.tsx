@@ -5,10 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 
-import { MEDAL_LABELS, MEDAL_TYPES } from "@/constants/medal.constant";
 import { PARIS_OLYMPICS_COUNTRIES_OPTION } from "@/constants/country.constant";
 import { MedalRecordDto } from "@/types.dto";
-import { MEDAL_FORM_SUBMIT_TYPE } from "@/types.type";
+import { MEDAL_FORM_SUBMIT_TYPE, MEDAL_LABELS, MEDAL_TYPE } from "@/types.type";
 
 export interface MedalFormProps {
   onSubmit: (data: MedalRecordDto, type: MEDAL_FORM_SUBMIT_TYPE) => void;
@@ -61,17 +60,19 @@ export default function MedalForm({ onSubmit }: MedalFormProps) {
             defaultValue="국가 선택"
           />
         </div>
-        {MEDAL_TYPES.map((type) => (
-          <div key={type} className="flex-1">
-            <p className="font-medium">{MEDAL_LABELS[type]}</p>
-            <Input
-              type="number"
-              id={type}
-              value={formData[type]}
-              onChange={handleMedalCountChange}
-            />
-          </div>
-        ))}
+        {(Object.keys(MEDAL_TYPE) as Array<keyof typeof MEDAL_TYPE>).map(
+          (type) => (
+            <div key={type} className="flex-1">
+              <p className="font-medium">{MEDAL_LABELS[MEDAL_TYPE[type]]}</p>
+              <Input
+                type="number"
+                id={type}
+                value={formData[MEDAL_TYPE[type]]}
+                onChange={handleMedalCountChange}
+              />
+            </div>
+          )
+        )}
       </div>
       <div className="flex flex-row-reverse gap-4">
         <Button
