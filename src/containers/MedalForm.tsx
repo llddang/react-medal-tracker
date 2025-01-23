@@ -44,38 +44,46 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
       0
     );
 
-    if (type === MedalFormSubmitType.ADD)
-      setMedalList((prev) => [
-        ...prev,
-        { ...formData, id, total: totalMedalCount },
-      ]);
-    if (type === MedalFormSubmitType.UPDATE)
-      setMedalList((prev) => [
-        ...prev.filter((item) => item.country !== formData.country),
-        { ...formData, id, total: totalMedalCount },
-      ]);
+    switch (type) {
+      case MedalFormSubmitType.ADD:
+        setMedalList((prev) => [
+          ...prev,
+          { ...formData, id, total: totalMedalCount },
+        ]);
+        break;
+      case MedalFormSubmitType.UPDATE:
+        setMedalList((prev) => [
+          ...prev.filter((item) => item.country !== formData.country),
+          { ...formData, id, total: totalMedalCount },
+        ]);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function resetFormData() {
+    setFormData(initialFormData);
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isInvalidateFormData(formData)) {
-      toast.warning("잘못된 입력 형식입니다.", {
+      return toast.warning("잘못된 입력 형식입니다.", {
         description: "국가가 선택되었고 메달의 값이 0 이상인지 확인해 주세요.",
       });
-      return;
     }
 
     const actionType = getFormActionValue<MedalFormSubmitType>(e);
     if (formSubmitLogic[actionType].isInvalidate(formData.country)) {
-      toast.warning("잘못된 입력 방식입니다.", {
+      return toast.warning("잘못된 입력 방식입니다.", {
         description: formSubmitLogic[actionType].errorMessage,
       });
-      return;
     }
 
     saveMedalList(formData, actionType);
 
-    setFormData(initialFormData);
+    resetFormData();
   }
 
   return (
