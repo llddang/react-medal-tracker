@@ -30,10 +30,8 @@ export default function MedalTable({
     setIsSortByTotal((prev) => !prev);
   }
 
-  function handleDeleteButtonClick(item: MedalRecordDto) {
-    setMedalList((prev) =>
-      prev.filter((medal) => medal.country !== item.country)
-    );
+  function handleDeleteButtonClick(medalRecordId: string) {
+    setMedalList((prev) => prev.filter((medal) => medal.id !== medalRecordId));
   }
 
   return (
@@ -46,7 +44,7 @@ export default function MedalTable({
             <TableHead className="text-center">은메달</TableHead>
             <TableHead className="text-center">동메달</TableHead>
             <TableHead className="text-center">
-              <Button variant="ghost" onClick={() => handleTotalHeaderClick()}>
+              <Button variant="ghost" onClick={handleTotalHeaderClick}>
                 전체 합
                 <ArrowUpDown />
               </Button>
@@ -57,12 +55,14 @@ export default function MedalTable({
         <TableBody>
           {medalList.length ? (
             sortedMedalList.map((item) => (
-              <TableRow key={item.country}>
-                {Object.entries(item).map(([key, value]) => (
-                  <TableCell key={key}>{value}</TableCell>
-                ))}
+              <TableRow key={item.id}>
+                <TableCell>{item.country}</TableCell>
+                <TableCell>{item.gold}</TableCell>
+                <TableCell>{item.sliver}</TableCell>
+                <TableCell>{item.bronze}</TableCell>
+                <TableCell>{item.total}</TableCell>
                 <TableCell>
-                  <Button onClick={() => handleDeleteButtonClick(item)}>
+                  <Button onClick={() => handleDeleteButtonClick(item.id)}>
                     삭제
                   </Button>
                 </TableCell>
