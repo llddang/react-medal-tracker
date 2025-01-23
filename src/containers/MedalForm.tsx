@@ -103,7 +103,7 @@ export default function MedalForm({ setMedalList }: MedalFormProps) {
             <p className="font-medium">{MEDAL_LABELS[MedalType[type]]}</p>
             <Input
               type="number"
-              id={type}
+              id={MedalType[type]}
               value={formData[MedalType[type]]}
               onChange={handleMedalCountChange}
             />
