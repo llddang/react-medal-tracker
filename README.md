@@ -40,6 +40,8 @@
 
 # 🚀 트러블 슈팅
 
+#### [영원히 입력 안되는 폼이 있다? : 진실혹은거짓](https://llddang-blog.tistory.com/64)
+
 <br/>
 <br/>
 
