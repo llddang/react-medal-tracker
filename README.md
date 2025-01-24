@@ -46,18 +46,19 @@
 # 📁 프로젝트 구조
 
 ```markdown
-📁 src/
-    |- components/ui
-    |    |- Shadcn.ui 라이브러리의 컴포넌트들을 모아두었습니다.
-    |
-    |- containers/
-    |    |- 특정 페이지에서만 사용되는 컴포넌트들을 모아두었습니다. (MedalForm, MedalTable)
-    |
-    |- constants/
-    |    |- 정적인 데이터들을 모아두었습니다.
-    |
-    |- types.dto.ts
-    |- types.type.ts
-    |
-    |- App.tsx 
+📦 React-Paris-Olympics
+├─ index.html
+└─ src
+   ├─ App.tsx
+   ├─ components
+   │  └─ ui (Shadcn.ui 라이브러리의 컴포넌트들을 모아두었습니다.)
+   ├─ constants.ts
+   ├─ containers (특정 페이지에서만 사용되는 컴포넌트들을 모아두었습니다. (MedalForm, MedalTable))
+   ├─ index.css
+   ├─ lib
+   │  ├─ medalForm.util.ts
+   │  └─ utils.ts
+   ├─ main.tsx
+   ├─ types.dto.ts
+   └─ types.type.ts
 ```
