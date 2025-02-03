@@ -8,7 +8,7 @@
 
 # 💬 프로젝트 소개
 > 📅 개발 기간 : 2025. 01. 21 ~ 2025. 01. 22 (총 2일) <br/>
-> 🔗 배포 주소 : [https://llddang.github.io/React-Paris-Olympics/](https://llddang.github.io/React-Paris-Olympics/) <br/>
+> 🔗 배포 주소 : [https://react-medal-tracker-dusky.vercel.app](https://react-medal-tracker-dusky.vercel.app/) <br/>
 > 
 > 파리 올림픽의 국가별 메달을 추적할 수 있는 **`Olympic Medal Tracker`** 입니다. <br/>
 >
